@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭厨房 - 美味家常菜</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍳 家庭厨房</h1>
+            <p>家的味道，用心制作</p>
+        </header>
+
+        <!-- 菜单展示区 -->
+        <section class="menu-section">
+            <h2>今日菜单</h2>
+            <div id="menuList" class="menu-grid">
+                <!-- 菜品会通过JavaScript动态加载到这里 -->
+            </div>
+        </section>
+
+        <!-- 购物车浮动按钮 -->
+        <div class="cart-button" onclick="toggleCart()">
+            🛒 购物车 <span id="cartCount">0</span>
+        </div>
+
+        <!-- 购物车侧边栏 -->
+        <div id="cartSidebar" class="cart-sidebar">
+            <div class="cart-header">
+                <h3>我的购物车</h3>
+                <button class="close-btn" onclick="toggleCart()">×</button>
+            </div>
+            <div id="cartItems" class="cart-items">
+                <!-- 购物车商品会动态显示在这里 -->
+                <p class="empty-cart">购物车是空的</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    总计: ¥<span id="totalPrice">0.00</span>
+                </div>
+                <button class="order-btn" onclick="showOrderForm()">下单</button>
+            </div>
+        </div>
+
+        <!-- 下单表单弹窗 -->
+        <div id="orderFormModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>填写订单信息</h3>
+                    <button class="close-btn" onclick="closeOrderForm()">×</button>
+                </div>
+                <form id="orderForm" class="order-form">
+                    <div class="form-group">
+                        <label for="customerName">姓名：</label>
+                        <input type="text" id="customerName" required placeholder="请输入您的姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">电话：</label>
+                        <input type="tel" id="customerPhone" required placeholder="请输入您的手机号码">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">送餐地址：</label>
+                        <textarea id="address" required placeholder="请输入详细的送餐地址" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">备注：</label>
+                        <textarea id="notes" placeholder="口味偏好、忌口等" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="closeOrderForm()">取消</button>
+                        <button type="submit">提交订单</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 加载提示 -->
+        <div id="loading" class="loading">加载中...</div>
+
+        <!-- 消息提示 -->
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

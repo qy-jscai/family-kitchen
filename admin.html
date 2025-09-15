@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭厨房 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #218838;
+        }
+
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-card.new-orders {
+            border-left: 4px solid #ffc107;
+        }
+
+        .stat-card.completed-orders {
+            border-left: 4px solid #28a745;
+        }
+
+        .stat-card.total-orders {
+            border-left: 4px solid #007bff;
+        }
+
+        .orders-table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .customer-info {
+            min-width: 150px;
+        }
+
+        .customer-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .customer-phone {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .order-items {
+            max-width: 250px;
+        }
+
+        .order-item {
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 2px 0;
+            font-size: 0.9em;
+        }
+
+        .address {
+            max-width: 200px;
+            word-break: break-word;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-new {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .action-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #0056b3;
+        }
+
+        .action-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .message.success {
+            background: #28a745;
+        }
+
+        .message.error {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            .stat-card {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍳 家庭厨房管理后台</h1>
+            <p>订单管理与状态更新</p>
+        </header>
+
+        <div class="controls">
+            <button class="refresh-btn" onclick="loadOrders()" id="refreshBtn">
+                🔄 刷新订单
+            </button>
+            <div class="stats">
+                <div class="stat-card new-orders">
+                    <h3>新订单</h3>
+                    <div class="number" id="newOrdersCount">0</div>
+                </div>
+                <div class="stat-card completed-orders">
+                    <h3>已完成</h3>
+                    <div class="number" id="completedOrdersCount">0</div>
+                </div>
+                <div class="stat-card total-orders">
+                    <h3>总订单</h3>
+                    <div class="number" id="totalOrdersCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="orders-table-container">
+            <div id="loading" class="loading">加载订单中...</div>
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="empty" class="empty" style="display: none;">暂无订单</div>
+            
+            <table id="ordersTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>顾客信息</th>
+                        <th>订单内容</th>
+                        <th>送餐地址</th>
+                        <th>下单时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- 订单数据会动态填充到这里 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+
+    <script>
+        let orders = [];
+
+        // 页面加载时自动获取订单
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            
+            // 每30秒自动刷新一次
+            setInterval(loadOrders, 30000);
+        });
+
+        // 加载订单列表
+        async function loadOrders() {
+            showLoading(true);
+            hideError();
+            hideEmpty();
+            document.getElementById('ordersTable').style.display = 'none';
+            
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '加载中...';
+            
+            try {
+                const response = await fetch('/api/orders');
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.message);
+                }
+                
+                orders = result.data;
+                renderOrders(orders);
+                updateStats(orders);
+                
+            } catch (error) {
+                showError('加载订单失败: ' + error.message);
+            } finally {
+                showLoading(false);
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 刷新订单';
+            }
+        }
+
+        // 渲染订单表格
+        function renderOrders(orders) {
+            const tableBody = document.getElementById('ordersTableBody');
+            
+            if (orders.length === 0) {
+                showEmpty();
+                return;
+            }
+            
+            tableBody.innerHTML = orders.map(order => `
+                <tr>
+                    <td class="order-id">#${order.id}</td>
+                    <td class="customer-info">
+                        <div class="customer-name">${order.customer_name}</div>
+                        <div class="customer-phone">${order.customer_phone}</div>
+                    </td>
+                    <td class="order-items">
+                        ${order.order_items.map(item => `
+                            <div class="order-item">
+                                ${getMenuItemName(item.id)} × ${item.qty}
+                            </div>
+                        `).join('')}
+                    </td>
+                    <td class="address">${order.address}</td>
+                    <td>${formatDateTime(order.created_at)}</td>
+                    <td>
+                        <select class="status-select" id="status-${order.id}" 
+                                onchange="updateOrderStatus(${order.id})">
+                            <option value="新订单" ${order.status === '新订单' ? 'selected' : ''}>新订单</option>
+                            <option value="已完成" ${order.status === '已完成' ? 'selected' : ''}>已完成</option>
+                        </select>
+                        <span class="status status-${order.status === '新订单' ? 'new' : 'completed'}" 
+                              style="display: none;">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn" onclick="updateOrderStatus(${order.id})">
+                            更新状态
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('ordersTable').style.display = 'table';
+        }
+
+        // 更新订单状态
+        async function updateOrderStatus(orderId) {
+            const select = document.getElementById(`status-${orderId}`);
+            const newStatus = select.value;
+            const button = select.parentElement.nextElementSibling.querySelector('.action-btn');
+            
+            const originalStatus = button.textContent;
+            button.disabled = true;
+            button.textContent = '更新中...';
+            
+            try {
+                const response = await fetch(`/api/order/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.message);
+                }
+                
+                showMessage('订单状态更新成功！', 'success');
+                
+                // 重新加载订单列表以确保数据最新
+                setTimeout(loadOrders, 1000);
+                
+            } catch (error) {
+                showMessage('更新失败: ' + error.message, 'error');
+                // 恢复原来的选择值
+                const order = orders.find(o => o.id === orderId);
+                if (order) {
+                    select.value = order.status;
+                }
+            } finally {
+                button.disabled = false;
+                button.textContent = originalStatus;
+            }
+        }
+
+        // 更新统计信息
+        function updateStats(orders) {
+            const newOrders = orders.filter(order => order.status === '新订单').length;
+            const completedOrders = orders.filter(order => order.status === '已完成').length;
+            const totalOrders = orders.length;
+            
+            document.getElementById('newOrdersCount').textContent = newOrders;
+            document.getElementById('completedOrdersCount').textContent = completedOrders;
+            document.getElementById('totalOrdersCount').textContent = totalOrders;
+        }
+
+        // 根据菜品ID获取菜品名称（这里需要先加载菜单数据）
+        function getMenuItemName(itemId) {
+            // 在实际应用中，这里应该先加载菜单数据
+            // 目前先用简单的映射，或者显示ID
+            const menuMap = {
+                1: '妈妈红烧肉',
+                2: '家传炸酱面',
+                3: '清炒时蔬'
+            };
+            return menuMap[itemId] || `菜品#${itemId}`;
+        }
+
+        // 格式化日期时间
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN');
+        }
+
+        // 显示/隐藏辅助函数
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showEmpty() {
+            document.getElementById('empty').style.display = 'block';
+        }
+
+        function hideEmpty() {
+            document.getElementById('empty').style.display = 'none';
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
