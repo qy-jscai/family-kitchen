@@ -1,29 +1,12 @@
 {
   "name": "family-kitchen",
   "version": "1.0.0",
-  "description": "家庭厨房外卖系统",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "set NODE_ENV=development&& node server.js",
-    "start": "node server.js",
     "dev": "nodemon server.js"
-    "prod": "set NODE_ENV=production&& node server.js"
   },
-  "keywords": [
-    "food",
-    "delivery",
-    "nodejs",
-    "express"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
     "express": "^4.18.2"
-    "sqlite3": "^5.1.7"
   }
 }
