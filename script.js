@@ -20,7 +20,13 @@ async function loadMenu() {
             throw new Error(result.message);
         }
         
-        menuItems = result.data;
+        menuItems = result.items || [];
+        renderMenu(menuItems);
+         // ✅ 添加安全检查
+        if (!Array.isArray(menuItems)) {
+            console.warn('菜单数据不是数组:', menuItems);
+            menuItems = [];
+        }
         renderMenu(menuItems);
     } catch (error) {
         showMessage('加载菜单失败: ' + error.message, 'error');
